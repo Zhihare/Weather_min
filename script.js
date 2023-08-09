@@ -6,6 +6,15 @@ const refs = {
 	todayInfo: document.querySelector(".today-info"),
 	todayWeather: document.querySelector(".left-info"),
 }
+refs.input.value = "London";
+serviceWeather("London")
+	.then((data) => {
+		refs.dayInfo.innerHTML = createMarkupTudeyElse(data.forecast.forecastday);
+		refs.ulWeater.innerHTML = createMarkup(data.forecast.forecastday);
+		refs.todayWeather.innerHTML = createMarkupTudey(data.forecast.forecastday);
+	})
+	.catch((err) => console.error(err));
+
 refs.button.addEventListener("click", serchWeather);
 
 function serchWeather(e) {
@@ -31,7 +40,7 @@ function serviceWeather(city) {
 	const params = new URLSearchParams({
 		key: API_KEY,
 		q: city,
-		days: 1,
+		days: 5,
 		lang: "uk",
 	});
 
@@ -47,16 +56,13 @@ function serviceWeather(city) {
 console.log(serviceWeather("Kiev"));
 
 function createMarkup(arr) {
-	return arr
+	return arr.slice(1)
 		.map(
 			({
 				date,
 				day: {
 					avgtemp_c,
 					condition: { text, icon },
-					maxwind_kph,
-					totalprecip_mm,
-					avghumidity,
 				},
 			}) =>
 				`<li>
@@ -69,15 +75,12 @@ function createMarkup(arr) {
 }
 
 function createMarkupTudey(arr) {
-	return arr.map(
+	return arr.slice(0, 1).map(
 		({
 			date,
 			day: {
 				avgtemp_c,
 				condition: { text, icon },
-				maxwind_kph,
-				totalprecip_mm,
-				avghumidity,
 			},
 		}) =>
 			`
@@ -101,7 +104,7 @@ function createMarkupTudey(arr) {
 }
 
 function createMarkupTudeyElse(arr) {
-	return arr.map(
+	return arr.slice(0, 1).map(
 		({
 			date,
 			day: {
